@@ -18,8 +18,6 @@ jobs:
           node-version: '20'
           solana-cli-version: '1.18.26'
           anchor-version: '0.30.1'
-          pnpm-package-manager: '8.15.5'
-          yarn-package-manager: '1.22.19'
 
       - name: Verify Solana CLI version
         run: solana --version
@@ -37,12 +35,10 @@ jobs:
         run: |
          ls
          cd ./multisig
+         ls
       
       - name: Verify Anchor CLI version
         run: anchor --version
-
-      - name: Install project dependencies
-        run: npm install
 
       - name: Anchor Build
         run: anchor build
