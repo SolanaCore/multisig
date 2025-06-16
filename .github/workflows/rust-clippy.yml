@@ -41,6 +41,9 @@ jobs:
       - name: Install required cargo
         run: cargo install clippy-sarif sarif-fmt
 
+      - name: change directory
+        run: cd ./multisig
+        
       - name: Run rust-clippy
         run:
           cargo clippy
