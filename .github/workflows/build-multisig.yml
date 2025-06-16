@@ -28,7 +28,7 @@ jobs:
         run: |
           solana config get
           solana config set --url devnet
-          solana-keygen new
+          solana-keygen new --no-bip39-passphrase
           solana address 
           solana airdrop 1
           solana balance 
