@@ -18,6 +18,7 @@ solana_security_txt::security_txt! {
     policy: "https://github.com/SolanaCore/multisig/blob/main/SECURITY.MD",
     source_code: "https://github.com/SolanaCore/multisig",
     preferred_languages: "en,de",
+}
 declare_id!("AwhGP9QqsN2JAaS2XyYo2PeC2EAvkCExYLd5Mfuq1GaQ");
 
 #[program]
