@@ -41,4 +41,7 @@ jobs:
         run: anchor --version
 
       - name: Anchor Build
-        run: anchor build
+        run: |
+          ls
+          cd ./multisig
+          anchor build
