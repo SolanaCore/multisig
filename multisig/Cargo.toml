@@ -1,6 +1,6 @@
 [workspace]
 members = [
-    "programs/*"
+    "programs/multisig"
 ]
 resolver = "2"
 

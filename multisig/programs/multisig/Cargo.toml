@@ -16,9 +16,11 @@ no-idl = []
 no-log-ix-name = []
 idl-build = ["anchor-lang/idl-build"]
 test-sbf = []
+anchor-debug = []
 
 [dependencies]
 anchor-lang = "0.31.1"
+solana-security-txt = "1.1.1"
 
 [dev-dependencies]
 mollusk-svm = "=0.0.15"
