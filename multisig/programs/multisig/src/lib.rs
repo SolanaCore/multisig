@@ -9,11 +9,26 @@ pub mod constants;
 pub mod error;
 pub mod instructions;
 pub mod state;
+pub mod utils;
 
-
-pub use constants::*;
-pub use instructions::*;
-//pub use state::*;
+pub use utils::assert_unique_owners;
+pub use constants::SEED;
+pub use instructions::{
+    approve::Approve,
+    auth::Auth,
+    create_multisig::CreateMultisig,
+    create_transaction::CreateTransaction,
+    exec_tx::ExecuteTransaction,
+    change_owners::ChangeOwners,
+    change_threshold::ChangeThreshold,
+    edit_tx::EditTransaction,
+    cancel_tx::CancelTransaction,
+    initialize_multisig::InitializeMultisig,
+    approve::Approve,
+    change_threshold::ChangeThreshold,
+    change_owners::ChangeOwners,
+};
+pub use state::{Multisig, Transaction, TransactionAccount};
 pub use error::ErrorCode;
 
 #[cfg(not(feature = "no-entrypoint"))]
@@ -25,6 +40,8 @@ solana_security_txt::security_txt! {
     source_code: "https://github.com/SolanaCore/multisig",
     preferred_languages: "en"
 }
+
+
 declare_id!("AwhGP9QqsN2JAaS2XyYo2PeC2EAvkCExYLd5Mfuq1GaQ");
 
 pub const ANCHOR_DISCRIMINATOR_SIZE: usize = 8;
@@ -39,17 +56,12 @@ pub mod SolanaCoreMultisig {
         threshold: u64,
         bump: u8,
     ) -> Result<()> {
-        require!(
-            threshold > 0 && (threshold as usize) <= owners.len(),
-            ErrorCode::InvalidThreshold
-        );
-        assert_unique_owners(&owners)?;
-
         let multisig = &mut ctx.accounts.multisig;
-        multisig.bump = bump;
-        multisig.owner = owners;
-        multisig.threshold = threshold;
-
+        multisig.set_multisig_details(
+            owners,
+            threshold,
+            bump,
+        )?;
         Ok(())
     }
 
@@ -59,209 +71,61 @@ pub mod SolanaCoreMultisig {
         data: Vec<u8>,
         accs: Vec<TransactionAccount>,
     ) -> Result<()> {
-        let owner_index = ctx
-            .accounts
-            .multisig
-            .owner
-            .iter()
-            .position(|a| a == ctx.accounts.proposer.key)
-            .ok_or(ErrorCode::InvalidOwner)?;
-
-        let mut signers = vec![false; ctx.accounts.multisig.owner.len()];
-        signers[owner_index] = true;
-
-        let tx = &mut ctx.accounts.transaction;
-        tx.program_id = pid;
-        tx.accounts = accs;
-        tx.data = data;
-        tx.signers = signers;
-        tx.multisig = ctx.accounts.multisig.key();
-        tx.did_execute = false;
+        tx.set_tx_details(
+            &ctx.accounts.multisig.key(),
+            &pid,
+            accs,
+            data,
+        )?;
+       
         Ok(())
     }
 
     pub fn execute_tx(ctx: Context<ExecTx>) -> Result<()> {
-        require!(ctx.accounts.tx.did_execute == false, ErrorCode::TransactionAlreadyExecuted);
-        let approval_count = ctx.accounts.tx.signers.iter().filter(|&&b| b).count() as u64;
-        let threshold = ctx.accounts.multisig.threshold;
-        require!(approval_count >= threshold, ErrorCode::InsufficientSigners);
-        let mut ix = (*ctx.accounts.tx.deref()).to_instruction();
-        ix.accounts = ix
-            .accounts
-            .iter()
-            .map(|acc| {
-                let mut acc = acc.clone();
-                if acc.pubkey == *ctx.accounts.multisig_signer.key {
-                    acc.is_signer = true;
-                }
-                acc
-            }).collect();
-
         let multisig_key = ctx.accounts.multisig.key();
+        let tx = &mut ctx.accounts.tx;
+        tx.validate(&ctx.accounts.multisig_signer)?;
+        tx.check_if_already_executed(&ctx.accounts.multisig)?;
+        tx.format_ix(multisig_key)?;
         /*
         ctx.accounts.multisig.key().as_ref(),
              ^^^^^^^^^^^^^^^^^^^^^^^^^^^ creates a temporary value which is freed while still in use
              &[ctx.accounts.multisig.bump],
          ];
          */
-        let seeds = [multisig_key.as_ref(), &[ctx.accounts.multisig.bump]];
+        let seeds = [SEED.to_le_bytes(), multisig_key.as_ref(), &[ctx.accounts.multisig.bump]];
         let signer_seeds = &[&seeds[..]];
         let rem_accs = ctx.remaining_accounts;
         invoke_signed(&ix, rem_accs, signer_seeds)?;
-        ctx.accounts.tx.did_execute = true;
+        tx.did_execute()?;
         Ok(())
     }
-    pub fn approve(ctx: Context<Approve>) -> Result<()> {
+    pub fn edit_tx(Context<EditTransaction>, pid: Pubkey, data: Vec<u8>, accs: Vec<TransactionAccount>) -> Result<()> {
+        let tx = &mut ctx.accounts.transaction;
+        tx.edit_tx_details(&pid, accs, data)?;
+        Ok(())
+    }
+    pub fn cancel_tx(ctx: Context<CancelTransaction>) -> Result<()> {
+        let tx = &mut ctx.accounts.transaction;
+        tx.cancel()?;
+        Ok(())
+    }
+    pub fn approve(ctx: Context<Approve>) -> Result<(), ErrorCode> {
         //verify if this person is there in the owners list of the multisig pda
-        let signer = ctx.accounts.signer.key;
-        let owner_index = ctx
-            .accounts
-            .multisig
-            .owner
-            .iter()
-            .position(|a| a == signer)
-            .ok_or(ErrorCode::InvalidOwner)?;
-        ctx.accounts.transaction.signers[owner_index] = true;
+        let tx  = &mut ctx.accounts.transaction;
+        tx.approve(ctx.accounts.signer.key)?;
         Ok(())
     }
-    pub fn change_threshold(ctx: Context<Auth>, new_threshold: u64) -> Result<()> {
-        if new_threshold < 0
-            && new_threshold > ctx.accounts.multisig.owner.len().try_into().unwrap()
-        {
-            return err!(ErrorCode::InvalidThreshold);
-        }
+    
+    pub fn change_threshold(ctx: Context<Auth>, new_threshold: u64) -> Result<(), ErrorCode> {
         let multisig = &mut ctx.accounts.multisig;
-        multisig.threshold = new_threshold;
+        multisig.update_threshold(new_threshold)?;
         Ok(())
     }
     pub fn change_owners(ctx: Context<Auth>, new_owners: Vec<Pubkey>) -> Result<()> {
-        if new_owners.len() < ctx.accounts.multisig.threshold.try_into().unwrap()
-            && new_owners.len() == 0
-        {
-            return err!(ErrorCode::InvalidOwner);
-        }
-        assert_unique_owners(&new_owners)?;
         let multisig = &mut ctx.accounts.multisig;
-        multisig.owner = new_owners;
+        multisig.owner(new_owners.clone())?;
+
         Ok(())
     }
 }
-
-// ---------- Accounts ----------
-#[derive(Accounts)]
-#[instruction(skip_lint = true)]
-pub struct ExecTx<'info> {
-    #[account(mut, signer)]
-    pub multisig: Box<Account<'info, Multisig>>,
-    
-    /// CHECK: This PDA is to verify
-    #[account(
-        seeds = [multisig.key().as_ref()],
-        bump = multisig.bump
-    )]
-    pub multisig_signer: AccountInfo<'info>,
-    #[account(mut)]
-    pub tx: Box<Account<'info, Transaction>>,
-}
-
-#[derive(Accounts)]
-pub struct CreateMultisig<'info> {
-    #[account(zero, signer)]
-    pub multisig: Box<Account<'info, Multisig>>,
-
-    pub system_program: Program<'info, System>,
-}
-
-#[derive(Accounts)]
-pub struct CreateTransaction<'info> {
-    #[account(mut)]
-    pub multisig: Box<Account<'info, Multisig>>,
-    #[account(zero)]
-    pub transaction: Box<Account<'info, Transaction>>,
-    pub proposer: Signer<'info>,
-}
-
-#[derive(Accounts)]
-pub struct Approve<'info> {
-    signer: Signer<'info>,
-    multisig: Box<Account<'info, Multisig>>,
-    #[account(mut, has_one = multisig)]
-    transaction: Box<Account<'info, Transaction>>,
-}
-#[derive(Accounts)]
-pub struct Auth<'info> {
-    #[account(mut)]
-    pub multisig: Box<Account<'info, Multisig>>,
-
-    #[account(
-        mut,
-        seeds = [multisig.key().as_ref()],
-        bump = multisig.bump,
-    )]
-    pub multisig_signer: Signer<'info>,
-}
-
-// ---------- Account Structs ----------
-
-#[account]
-#[derive(InitSpace)]
-pub struct Transaction {
-    pub multisig: Pubkey,
-    pub program_id: Pubkey,
-    #[max_len(25)]
-    pub accounts: Vec<TransactionAccount>,
-    #[max_len(1024)]
-    pub data: Vec<u8>,
-    #[max_len(25)]
-    pub signers: Vec<bool>,
-    pub did_execute: bool,
-}
-
-#[derive(InitSpace, Clone, AnchorDeserialize, AnchorSerialize)]
-pub struct TransactionAccount {
-    pub pubkey: Pubkey,
-    pub is_signer: bool,
-    pub is_writable: bool,
-}
-
-#[account]
-#[derive(InitSpace)]
-pub struct Multisig {
-    #[max_len(50)]
-    pub owner: Vec<Pubkey>,
-    pub threshold: u64,
-    pub bump: u8,
-}
-
-// ---------- Utility ----------
-
-fn assert_unique_owners(owners: &[Pubkey]) -> Result<()> {
-    let mut seen = HashSet::new();
-    for owner in owners {
-        if !seen.insert(owner) {
-            return Err(error!(ErrorCode::InvalidThreshold));
-        }
-    }
-    Ok(())
-}
-//IMP-> Rust's orphan rule forbids this: you can only implement foreign traits for local types, or local traits for foreign types.
-pub trait ToIx {
-    fn to_instruction(&self) -> Instruction;
-}
-impl<'info> ToIx for Account<'info, Transaction> {
-    fn to_instruction(&self) -> Instruction {
-        Instruction {
-            program_id: self.program_id,
-            accounts: self
-                .accounts
-                .iter()
-                .map(|acc| AccountMeta {
-                    pubkey: acc.pubkey,
-                    is_signer: acc.is_signer,
-                    is_writable: acc.is_writable,
-                }).collect(),
-            data: self.data.clone(),
-        }
-    }
-}
-

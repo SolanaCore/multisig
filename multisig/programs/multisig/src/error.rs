@@ -10,4 +10,6 @@ pub enum ErrorCode {
     InsufficientSigners,
     #[msg("Transaction is already executed")]
     TransactionAlreadyExecuted,
+    #[msg("Transaction details provided are invalid")]
+    InvalidTransactionDetails
 }
