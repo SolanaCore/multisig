@@ -30,7 +30,7 @@ declare_id!("AwhGP9QqsN2JAaS2XyYo2PeC2EAvkCExYLd5Mfuq1GaQ");
 pub const ANCHOR_DISCRIMINATOR_SIZE: usize = 8;
 
 #[program]
-mod SolanaCoreMultisig {
+pub mod SolanaCoreMultisig {
     use super::*;
 
     pub fn initialize_multisig(
