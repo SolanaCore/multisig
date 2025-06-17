@@ -13,6 +13,7 @@ pub mod state;
 pub use constants::*;
 pub use instructions::*;
 pub use state::*;
+pub use error::ErrorCode;
 
 #[cfg(not(feature = "no-entrypoint"))]
 solana_security_txt::security_txt! {
