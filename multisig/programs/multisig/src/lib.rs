@@ -2,9 +2,8 @@ use anchor_lang::prelude::*;
 use anchor_lang::solana_program::instruction::Instruction;
 use anchor_lang::solana_program::program::invoke_signed;
 use std::collections::HashSet;
-use std::ops::Deref;
 
-#![allow(unused)]
+#[allow(unused)]
 pub mod constants;
 pub mod error;
 pub mod instructions;
@@ -26,7 +25,6 @@ solana_security_txt::security_txt! {
 }
 declare_id!("AwhGP9QqsN2JAaS2XyYo2PeC2EAvkCExYLd5Mfuq1GaQ");
 
-#[program]
 pub const ANCHOR_DISCRIMINATOR_SIZE: usize = 8;
 
 #[program]

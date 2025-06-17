@@ -17,5 +17,6 @@ cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
-test = "cargo test-sbf"
+test-mollusk = "cargo test-sbf"
+test = "npx mocha -t 1000000 tests/anchor.test.ts"
 
