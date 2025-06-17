@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use crate::state::{Multisig, Transaction};
+use crate::state::{Multisig};
 use crate::constants::SEED;
 #[derive(Accounts)]
 pub struct Auth<'info> {
@@ -8,8 +8,14 @@ pub struct Auth<'info> {
 
     #[account(
         mut,
-        seeds = [SEED.to_le_bytes(), multisig.key().as_ref()],
+        seeds = [b"multisig", multisig.key().as_ref()],
         bump = multisig.bump,
     )]
     pub multisig_signer: Signer<'info>,
+}
+
+#[event]
+pub struct AuthEvent {
+    pub multisig: Pubkey,
+    pub program_id: Pubkey,
 }

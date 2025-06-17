@@ -1,3 +1,3 @@
-pub mod assert_unique_owners;
+pub mod assert_unique_owner;
 
-pub use assert_unique_owners::*;
+pub use assert_unique_owner::*;

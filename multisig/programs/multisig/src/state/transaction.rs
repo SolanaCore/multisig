@@ -1,6 +1,9 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::instruction::Instruction;
-use crate::errors::ErrorCode;
+use crate::error::ErrorCode;
+use crate::state::{Multisig};
+use std::ops::Deref;
+
 #[account]
 #[derive(InitSpace)]
 pub struct Transaction {
@@ -23,61 +26,56 @@ pub struct TransactionAccount {
     pub is_writable: bool,
 }
 
-impl Transaction{
+
+impl<'info> Transaction{
         pub fn init(
         &mut self,
-        ctx: &Context<CreateTransaction>, // <-- pass context explicitly
-        multisig: Multisig,
+        multisig: Box<Account<Multisig>>,
         program_id: &Pubkey,
         accounts: Vec<TransactionAccount>,
         data: Vec<u8>,
+        proposer: Pubkey,
     ) -> Result<()> {
-        let proposer_index = ctx
-            .accounts
-            .multisig
-            .owner
-            .iter()
-            .position(|a| a == ctx.accounts.proposer.key)
-            .ok_or(ErrorCode::InvalidOwner)?;
+        let proposer_index = multisig.owner.iter().position(|a| *a == proposer.key()).ok_or(ErrorCode::InvalidOwner)?;
 
-        let mut signers = vec![false; ctx.accounts.multisig.owner.len()];
+        let mut signers = vec![false; multisig.owner.len()];
         signers[proposer_index] = true;
 
-        self.multisig = *multisig.key(); // assuming multisig is an account
+        self.multisig = multisig.key(); // assuming multisig is an account
         self.program_id = *program_id;
         self.accounts = accounts;
         self.data = data;
         self.signers = signers;
         self.did_execute = false;
+        self.owner = proposer.key();
 
         Ok(())
     }
 
 
-    pub fn approve(self, signer) -> Result<(), ErrorCode::InvalidOwner> {
-        let owner_index = ctx
-            .accounts
-            .multisig
+    pub fn approve(&mut self, signer:Pubkey, multisig:&Multisig) -> Result<()> {
+        let owner_index = multisig
             .owner
             .iter()
-            .position(|a| a == signer)
+            .position(|a| *a == signer)
             .ok_or(ErrorCode::InvalidOwner)?;
-        ctx.accounts.transaction.signers[owner_index] = true;
+        self.signers[owner_index] = true;
         Ok(())
     }
 
-    pub fn validate(&self, multisig: &Multisig) -> Result<(), ErrorCode> {
+    pub fn validate(&self, multisig: &Multisig) -> Result<()> {
         require!(self.did_execute == false, ErrorCode::TransactionAlreadyExecuted);
         let approval_count = self.signers.iter().filter(|&&b| b).count() as u64;
         let threshold = multisig.threshold;
         require!(approval_count >= threshold, ErrorCode::InsufficientSigners);
         Ok(())
     }
-    pub fn check_if_already_executed(&self) -> Result<(), ErrorCode> {
-        require!(!self.did_execute, ErrorCode::TransactionAlreadyExecuted);
+    pub fn check_if_already_executed(&self) -> Result<()> {
+        let did_execute = self.did_execute;
+        require!(!did_execute, ErrorCode::TransactionAlreadyExecuted);
         Ok(())
     }
-    pub format_ix(&self, multisig_signer) -> Result<Instruction, _> {
+    pub fn format_ix(&self, multisig_signer:&Pubkey) -> Instruction {
         //first build the ix 
         let mut ix = (*self.deref()).to_instruction();
         ix.accounts = ix
@@ -85,33 +83,33 @@ impl Transaction{
             .iter()
             .map(|acc| {
                 let mut acc = acc.clone();
-                if acc.pubkey == self.multisig_signer.key {
+                if acc.pubkey == *multisig_signer {
                     acc.is_signer = true;
                 }
                 acc
             }).collect();
-        ix
+            ix
     }
-    pub fn did_execute(&mut self) -> Result<(), ErrorCode> {
+    pub fn did_execute(&mut self) -> Result<()> {
         if self.did_execute {
-            return Err(ErrorCode::TransactionAlreadyExecuted);
+            return Err(ErrorCode::TransactionAlreadyExecuted.into());
         }
         self.did_execute = true;
-        Ok(());
+        Ok(())
     }
 
-    pub fn edit_tx_details(
+    pub fn edit_tx(
         &mut self,
         program_id: &Pubkey,
         accounts: Vec<TransactionAccount>,
         data: Vec<u8>,
         proposer: Pubkey,
-    ) -> Result<(), ErrorCode> {
+    ) -> Result<()> {
         if self.did_execute {
-            return Err(ErrorCode::TransactionAlreadyExecuted);
+            return Err(ErrorCode::TransactionAlreadyExecuted.into());
         }
         if accounts.is_empty() || data.is_empty() {
-            return Err(ErrorCode::InvalidTransactionDetails);
+            return Err(ErrorCode::InvalidTransactionDetails.into());
         }
 
         if proposer == self.owner {
@@ -119,22 +117,21 @@ impl Transaction{
         self.accounts = accounts;
         self.data = data;
         }else {
-            return Err(ErrorCode::InvalidOwner);
-
+            return Err(ErrorCode::InvalidOwner.into());
         }
         Ok(())
     }
 
-    pub fn cancel(&mut self, proposer:Pubkey) -> Result<(), ErrorCode> {
+    pub fn cancel(&self, proposer:Pubkey) -> Result<()> {
         if self.did_execute {
-            return Err(ErrorCode::TransactionAlreadyExecuted);
+            return Err(ErrorCode::TransactionAlreadyExecuted.into());
         }
-        assert!(!self.owner == proposer, ErrorCode::InvalidOwner);
+        assert!(self.owner == proposer,"{}", ErrorCode::InvalidOwner);
         Ok(())
     }
 
-    pub fn revokeApproval(&mut self, signer: Pubkey) -> Result<(), ErrorCode> {
-        let owner_index = self
+    pub fn revoke_approval(&mut self, multisig:&Multisig, signer: Pubkey) -> Result<()> {
+        let owner_index = multisig
             .owner
             .iter()
             .position(|a| a == &signer)
@@ -147,7 +144,8 @@ impl Transaction{
 pub trait ToIx {
     fn to_instruction(&self) -> Instruction;
 }
-impl<'info> ToIx for Account<'info, Transaction> {
+
+impl<'info> ToIx for Transaction {
     fn to_instruction(&self) -> Instruction {
         Instruction {
             program_id: self.program_id,
