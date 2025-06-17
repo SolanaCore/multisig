@@ -17,7 +17,7 @@ jobs:
         with:
           node-version: '20'
           solana-cli-version: '1.18.26'
-          anchor-version: '0.30.1'
+          anchor-version: '0.31.1'
 
       - name: Verify Solana CLI version
         run: solana --version
