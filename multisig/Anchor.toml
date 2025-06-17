@@ -1,6 +1,6 @@
 [toolchain]
 package_manager = "npm"
-
+anchor_version = "0.30.1"
 [features]
 resolution = true
 skip-lint = false
@@ -17,3 +17,4 @@ wallet = "~/.config/solana/id.json"
 
 [scripts]
 test = "cargo test-sbf"
+

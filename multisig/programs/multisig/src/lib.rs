@@ -15,10 +15,10 @@ solana_security_txt::security_txt! {
     name: "multisig",
     project_url: "https://github.com/SolanaCore/multisig",
     contacts:"mailto:artificialintelligencehub35@gmail.com",
+    policy: "https://github.com/SolanaCore/multisig/blob/main/SECURITY.MD",
     source_code: "https://github.com/SolanaCore/multisig",
     preferred_languages: "en"
 }
-
 declare_id!("AwhGP9QqsN2JAaS2XyYo2PeC2EAvkCExYLd5Mfuq1GaQ");
 
 #[program]
