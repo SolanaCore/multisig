@@ -1,10 +1,10 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::instruction::Instruction;
-use anchor_lang::solana_program::program::invoke_signed;
 use std::collections::HashSet;
 use std::ops::Deref;
+use anchor_lang::solana_program::program::invoke_signed;
 
-#![allow(unused)]
+#[allow(unused)]
 pub mod constants;
 pub mod error;
 pub mod instructions;
@@ -13,7 +13,8 @@ pub mod state;
 
 pub use constants::*;
 pub use instructions::*;
-pub use state::*;
+//pub use state::*;
+pub use error::ErrorCode;
 
 #[cfg(not(feature = "no-entrypoint"))]
 solana_security_txt::security_txt! {
@@ -26,7 +27,6 @@ solana_security_txt::security_txt! {
 }
 declare_id!("AwhGP9QqsN2JAaS2XyYo2PeC2EAvkCExYLd5Mfuq1GaQ");
 
-#[program]
 pub const ANCHOR_DISCRIMINATOR_SIZE: usize = 8;
 
 #[program]
@@ -81,7 +81,7 @@ pub mod SolanaCoreMultisig {
     }
 
     pub fn execute_tx(ctx: Context<ExecTx>) -> Result<()> {
-        require!(ctx.accounts.tx.did_execute == false, ErrorCode::TxExecuted);
+        require!(ctx.accounts.tx.did_execute == false, ErrorCode::TransactionAlreadyExecuted);
         let approval_count = ctx.accounts.tx.signers.iter().filter(|&&b| b).count() as u64;
         let threshold = ctx.accounts.multisig.threshold;
         require!(approval_count >= threshold, ErrorCode::InsufficientSigners);
@@ -145,30 +145,21 @@ pub mod SolanaCoreMultisig {
         multisig.owner = new_owners;
         Ok(())
     }
-    //todo
-
-    pub fn reject_transaction() {
-
-    }
-    pub fn cancel_transaction() {
-
-    }
-    pub fn edit_tx(){
-
-    }
 }
 
 // ---------- Accounts ----------
 #[derive(Accounts)]
+#[instruction(skip_lint = true)]
 pub struct ExecTx<'info> {
     #[account(mut, signer)]
     pub multisig: Box<Account<'info, Multisig>>,
-
+    
+    /// CHECK: This PDA is to verify
     #[account(
         seeds = [multisig.key().as_ref()],
         bump = multisig.bump
     )]
-    pub multisig_signer: UncheckedAccount<'info>,
+    pub multisig_signer: AccountInfo<'info>,
     #[account(mut)]
     pub tx: Box<Account<'info, Transaction>>,
 }

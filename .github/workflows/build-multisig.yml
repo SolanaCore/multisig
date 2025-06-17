@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-the-program:
+  build-and-test-program:
     runs-on: ubuntu-latest
 
     steps:
@@ -45,3 +45,6 @@ jobs:
           ls
           cd ./multisig
           anchor build
+
+      - name: Anchor Test
+        run: Anchor test
