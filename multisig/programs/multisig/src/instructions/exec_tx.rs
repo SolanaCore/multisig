@@ -1,10 +1,9 @@
 use anchor_lang::solana_program::program::invoke_signed;
 use anchor_lang::prelude::*;
-use anchor_lang::solana_program::program::Instruction;
+use anchor_lang::solana_program::instruction::Instruction;
 use anchor_lang::prelude::Context;
 use anchor_lang::prelude::Pubkey;
 use crate::state::{Multisig, Transaction, TransactionAccount};
-use crate::constants::*;
 use crate::error::ErrorCode;
 // #[derive(Accounts)]
 // pub struct ExecuteTransaction<'info> {
@@ -28,7 +27,7 @@ pub struct ExecuteTransaction<'info> {
     #[account(
         mut, 
         seeds = [b"multisig", multisig.key().as_ref()],
-        bump = multisig.bump,
+        bump = multisig.bump
     )]
     pub multisig_signer: Box<AccountInfo<'info>>,
 
@@ -48,7 +47,7 @@ pub struct TransactionExecuted {
     pub signers: Vec<bool>,
 }
 
-pub fn execute_transaction(ctx: Context<ExecuteTransaction>) -> Result<()> {
+pub fn execute_transaction(ctx: &mut Context<ExecuteTransaction>) -> Result<()> {
     let multisig = &ctx.accounts.multisig;
     let transaction = &mut ctx.accounts.transaction;
     let proposer = &ctx.accounts.proposer;
@@ -64,10 +63,9 @@ pub fn execute_transaction(ctx: Context<ExecuteTransaction>) -> Result<()> {
     }
 
     let multisig_key = ctx.accounts.multisig.key();
-        let tx = &ctx.accounts.transaction;
-        tx.validate(&ctx.accounts.multisig)?;
-        tx.check_if_already_executed()?;
-        let ix: Instruction = tx.format_ix(&ctx.accounts.multisig_signer.key());
+        transaction.validate(&ctx.accounts.multisig)?;
+        transaction.check_if_already_executed()?;
+        let ix: Instruction = transaction.format_ix(&ctx.accounts.multisig_signer.key());
         /*
         ctx.accounts.multisig.key().as_ref(),
              ^^^^^^^^^^^^^^^^^^^^^^^^^^^ creates a temporary value which is freed while still in use
@@ -78,7 +76,7 @@ pub fn execute_transaction(ctx: Context<ExecuteTransaction>) -> Result<()> {
         let signer_seeds = &[&seeds[..]];
         let rem_accs = ctx.remaining_accounts;
         invoke_signed(&ix, rem_accs, signer_seeds)?;
-        tx.did_execute()?;
+        transaction.did_execute()?;
     
     // Emit an event for the executed transaction
     emit!(TransactionExecuted {

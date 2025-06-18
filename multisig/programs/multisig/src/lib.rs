@@ -1,17 +1,20 @@
+// programs/multisig/src/lib.rs
+
 use anchor_lang::prelude::*;
-use anchor_lang::solana_program::instruction::Instruction;
 
 #[allow(unused)]
 pub mod constants;
 pub mod error;
-pub mod instructions;
+pub mod instructions; // This line already re-exports the modules, but direct calls are better within the program
 pub mod state;
 pub mod utils;
 
-// use utils::assert_unique_owner;
-use instructions::*;
+#[allow(unused_import)]
+use instructions::*; // Keep this to bring the context structs into scope
 use state::*;
 use error::ErrorCode;
+use utils::*;
+
 
 #[cfg(not(feature = "no-entrypoint"))]
 solana_security_txt::security_txt! {
@@ -23,9 +26,6 @@ solana_security_txt::security_txt! {
     preferred_languages: "en"
 }
 
-//pub type Result<T> = std::result::Result<T, anchor_lang::prelude::Error>;
-
-
 declare_id!("AwhGP9QqsN2JAaS2XyYo2PeC2EAvkCExYLd5Mfuq1GaQ");
 
 pub const ANCHOR_DISCRIMINATOR_SIZE: usize = 8;
@@ -35,35 +35,35 @@ pub mod SolanaCoreMultisig {
     use super::*;
 
     pub fn initialize_multisig(
-        ctx: Context<CreateMultisig>, owners: Vec<Pubkey>, threshold: u64, bump: u8,
+        ctx: Context<InitMultisig>, owners: Vec<Pubkey>, threshold: u64, bump: u8,
     ) -> Result<()> {
-        instruction::init_multisig(Context<'_', '_', '_', '_', CreateMultisig<'_'>>, owners, threshold, bump)
+        // Direct call to the function imported by `use instructions::*;` or simply define it here
+        instructions::init_multisig(ctx, owners, threshold, bump)
     }
 
     pub fn create_tx(
         ctx: Context<InitTransaction>, pid: Pubkey, data: Vec<u8>, accs: Vec<TransactionAccount>
     ) -> Result<()> {
-        instruction::init_transaction(Context<'_', '_', '_', '_', InitTransaction<'_'>>, pid, data, accs)
+        instructions::init_transaction(ctx, &pid, accs, data)
     }
 
-    pub fn execute_tx(ctx: Context<ExecuteTransaction>) -> Result<()> {
-        instruction::execute_transaction(Context<'_', '_', '_', '_', ExecuteTransaction<'_'>>) 
+    pub fn execute_tx(ctx: &mut Context<ExecuteTransaction>) -> Result<()> { // Removed &mut as it's typically Context<T>
+        instructions::execute_transaction(ctx)
     }
 
-    pub fn edit_tx(ctx: Context<EditTransaction>, pid: Pubkey, data: Vec<u8>, accs: Vec<TransactionAccount>) -> Result<()> {
-        instruction::edit_transaction(Context<'_', '_', '_', '_', EditTransaction<'_'>>, pid, data, accs)
+    pub fn edit_tx(ctx: Context<EditTransaction>, data: Vec<u8>, accs: Vec<TransactionAccount>) -> Result<()> {
+        instructions::edit_transaction(ctx, accs, data)
     }
 
     pub fn cancel_tx(ctx: Context<CancelTransaction>) -> Result<()> {
-        instruction::cancel_transaction(Context<'_', '_', '_', '_', CancelTransaction<'_'>>)
+        instructions::cancel_transaction(ctx)
     }
 
     pub fn revoke_approval(ctx: Context<RevokeApproval>) -> Result<()> {
-        instruction::revoke_approval(Context<'_', '_', '_', '_', RevokeApproval<'_'>>)
+        instructions::revoke_approval(ctx)
     }
 
-    pub fn approve(ctx: Context<Approve>) -> Result<()> {
-        instruction::approve(Context<'_', '_', '_', '_', Approve<'_'>>)
+    pub fn approve(ctx: Context<ApproveTransaction>) -> Result<()> {
+        instructions::approve_transaction(ctx)
     }
-    
 }

@@ -2,7 +2,6 @@ use anchor_lang::prelude::*;
 use anchor_lang::solana_program::pubkey::Pubkey;
 use anchor_lang::prelude::Signer;
 use crate::state::{Multisig, Transaction, TransactionAccount};
-use crate::constants::SEED;
 use crate::error::ErrorCode;
 
 #[derive(Accounts)]
@@ -36,7 +35,7 @@ pub struct TransactionEdited {
 
 pub fn edit_transaction(
     ctx: Context<EditTransaction>,
-    accounts: Vec<TransactionAccount>,
+    accs: Vec<TransactionAccount>,
     data: Vec<u8>,
 ) -> Result<()> {
     let multisig = &mut ctx.accounts.multisig;
@@ -50,8 +49,7 @@ pub fn edit_transaction(
 
     transaction.check_if_already_executed()?;
     transaction.edit_tx(
-        &ctx.program_id,
-        accounts,
+        accs,
         data,
         proposer.key(),
     )?;

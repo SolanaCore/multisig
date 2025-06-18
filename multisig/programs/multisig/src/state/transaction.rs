@@ -30,7 +30,7 @@ pub struct TransactionAccount {
 impl<'info> Transaction{
         pub fn init(
         &mut self,
-        multisig: Box<Account<Multisig>>,
+        multisig: &Box<Account<Multisig>>,
         program_id: &Pubkey,
         accounts: Vec<TransactionAccount>,
         data: Vec<u8>,
@@ -41,7 +41,7 @@ impl<'info> Transaction{
         let mut signers = vec![false; multisig.owner.len()];
         signers[proposer_index] = true;
 
-        self.multisig = multisig.key(); // assuming multisig is an account
+        self.multisig = multisig.clone().key(); // assuming multisig is an account
         self.program_id = *program_id;
         self.accounts = accounts;
         self.data = data;
@@ -100,21 +100,19 @@ impl<'info> Transaction{
 
     pub fn edit_tx(
         &mut self,
-        program_id: &Pubkey,
-        accounts: Vec<TransactionAccount>,
+        accs: Vec<TransactionAccount>,
         data: Vec<u8>,
         proposer: Pubkey,
     ) -> Result<()> {
         if self.did_execute {
             return Err(ErrorCode::TransactionAlreadyExecuted.into());
         }
-        if accounts.is_empty() || data.is_empty() {
+        if accs.is_empty() || data.is_empty() {
             return Err(ErrorCode::InvalidTransactionDetails.into());
         }
 
         if proposer == self.owner {
-        self.program_id = *program_id;
-        self.accounts = accounts;
+        self.accounts = accs;
         self.data = data;
         }else {
             return Err(ErrorCode::InvalidOwner.into());

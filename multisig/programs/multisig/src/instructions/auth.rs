@@ -1,6 +1,5 @@
 use anchor_lang::prelude::*;
 use crate::state::{Multisig};
-use crate::constants::SEED;
 #[derive(Accounts)]
 pub struct Auth<'info> {
     #[account(mut)]

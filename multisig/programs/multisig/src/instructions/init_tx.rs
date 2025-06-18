@@ -32,8 +32,8 @@ pub struct TransactionCreated {
     pub signers: Vec<bool>,
 }
 
-pub fn init_transaction(ctx: Context<InitTransaction>, accounts: Vec<TransactionAccount>, data: Vec<u8>, signers: Vec<bool>) -> Result<()> {
-    let multisig = ctx.accounts.multisig;
+pub fn init_transaction(ctx: Context<InitTransaction>, pid: &Pubkey, accounts: Vec<TransactionAccount>, data: Vec<u8>) -> Result<()> {
+    let multisig = &ctx.accounts.multisig;
     let transaction = &mut ctx.accounts.transaction;
     let proposer = &ctx.accounts.proposer;
 
@@ -43,15 +43,15 @@ pub fn init_transaction(ctx: Context<InitTransaction>, accounts: Vec<Transaction
     }
     transaction.init(
         multisig,
-        &proposer.key(),
+        pid,
         accounts,
         data,
-        proposer,
+        proposer.key(),
     )?;
     
     // Emit an event for the created transaction
     emit!(TransactionCreated {
-        multisig: multisig.key(),
+        multisig: multisig.clone().key(),
         program_id: *ctx.program_id,
         accounts: transaction.accounts.clone(),
         data: transaction.data.clone(),
