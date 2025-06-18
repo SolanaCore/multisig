@@ -47,4 +47,4 @@ jobs:
           anchor build
 
       - name: Anchor Test
-        run: Anchor test
+        run: anchor test
