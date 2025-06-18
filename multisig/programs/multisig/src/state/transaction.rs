@@ -77,7 +77,7 @@ impl<'info> Transaction{
     }
     pub fn format_ix(&self, multisig_signer:&Pubkey) -> Instruction {
         //first build the ix 
-        let mut ix = (*self.deref()).to_instruction();
+        let mut ix = (*self).to_instruction();
         ix.accounts = ix
             .accounts
             .iter()

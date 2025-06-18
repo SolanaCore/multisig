@@ -24,12 +24,12 @@ use crate::error::ErrorCode;
 pub struct ExecuteTransaction<'info> {
     pub multisig: Box<Account<'info, Multisig>>,
 
+   /// CHECK: multisig_signer is a PDA program signer. Data is never read or written to
     #[account(
-        mut, 
         seeds = [b"multisig", multisig.key().as_ref()],
-        bump = multisig.bump
+        bump = multisig.bump,
     )]
-    pub multisig_signer: Box<AccountInfo<'info>>,
+    multisig_signer: UncheckedAccount<'info>,
 
     #[account(mut, close = proposer)]
     pub transaction: Box<Account<'info, Transaction>>,
@@ -47,7 +47,7 @@ pub struct TransactionExecuted {
     pub signers: Vec<bool>,
 }
 
-pub fn execute_transaction(ctx: &mut Context<ExecuteTransaction>) -> Result<()> {
+pub fn execute_transaction(ctx: Context<ExecuteTransaction>) -> Result<()> {
     let multisig = &ctx.accounts.multisig;
     let transaction = &mut ctx.accounts.transaction;
     let proposer = &ctx.accounts.proposer;

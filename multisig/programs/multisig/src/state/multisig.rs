@@ -48,11 +48,3 @@ impl Multisig {
         Ok(())
     }
 }
-
-#[event]
-pub struct MultisigInitialized {
-    pub multisig: Pubkey,
-    pub owners: Vec<Pubkey>,
-    pub threshold: u64,
-    pub bump: u8,
-}

@@ -9,10 +9,12 @@ pub mod instructions; // This line already re-exports the modules, but direct ca
 pub mod state;
 pub mod utils;
 
-#[allow(unused_import)]
+#[allow(unused_imports)]
 use instructions::*; // Keep this to bring the context structs into scope
 use state::*;
+#[allow(unused_imports)]
 use error::ErrorCode;
+#[allow(unused_imports)]
 use utils::*;
 
 
@@ -47,7 +49,7 @@ pub mod SolanaCoreMultisig {
         instructions::init_transaction(ctx, &pid, accs, data)
     }
 
-    pub fn execute_tx(ctx: &mut Context<ExecuteTransaction>) -> Result<()> { // Removed &mut as it's typically Context<T>
+    pub fn execute_tx(ctx: Context<ExecuteTransaction>) -> Result<()> { // Removed &mut as it's typically Context<T>
         instructions::execute_transaction(ctx)
     }
 
