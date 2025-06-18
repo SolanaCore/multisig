@@ -5,7 +5,7 @@ use crate::state::{Multisig};
 use std::ops::Deref;
 
 #[account]
-#[derive(InitSpace, Clone)]
+#[derive(InitSpace)]
 pub struct Transaction {
     pub multisig: Pubkey,
     pub program_id: Pubkey,
