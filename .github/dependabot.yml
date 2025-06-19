@@ -10,9 +10,4 @@ updates:
   - package-ecosystem: "npm"
     directory: "multisig" 
     schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "anchor"
-    directory: "multisig/programs/multisig" 
-    schedule:
-      interval: "weekly"
+      interval: "daily"
