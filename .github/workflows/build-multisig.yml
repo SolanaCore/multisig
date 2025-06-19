@@ -28,7 +28,7 @@ jobs:
           solana config set --url devnet
           solana-keygen new --no-bip39-passphrase
           solana address 
-          solana airdrop 1
+          solana airdrop 2
           solana balance 
 
       - name: change dir
