@@ -2,18 +2,19 @@ use anchor_lang::prelude::*;
 use crate::state::{Multisig, Transaction};
 // use crate::constants::SEED;
 
-#[derive(Accounts)]
-pub struct CancelTransaction<'info> {
-    pub multisig: Box<Account<'info, Multisig>>,
+    #[derive(Accounts)]
+    pub struct CancelTransaction<'info> {
+        pub multisig: Box<Account<'info, Multisig>>,
 
-    #[account(
-        mut,
-        close = proposer, // Close the transaction account and transfer remaining SOL to the multisig account
-    )]
-    pub transaction: Box<Account<'info, Transaction>>,
+        #[account(
+            mut,
+            close = proposer, // Close the transaction account and transfer remaining SOL to the multisig account
+        )]
+        pub transaction: Box<Account<'info, Transaction>>,
 
-    pub proposer: Signer<'info>,
-}
+        #[account(mut)]
+        pub proposer: Signer<'info>,
+    }
 
 #[event]
 pub struct TransactionCancelled {

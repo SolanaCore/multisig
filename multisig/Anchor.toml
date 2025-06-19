@@ -18,5 +18,5 @@ wallet = "~/.config/solana/id.json"
 
 [scripts]
 test-mollusk = "cargo test-sbf"
-test = "npx mocha -t 1000000 tests/anchor.test.ts"
+test = "npm ts-mocha -p ./tsconfig.json -t 1000000 tests/anchor.test.ts"
 

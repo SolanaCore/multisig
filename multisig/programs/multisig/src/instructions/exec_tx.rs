@@ -22,6 +22,7 @@ use crate::error::ErrorCode;
 
 #[derive(Accounts)]
 pub struct ExecuteTransaction<'info> {
+    #[account(mut, signer)]
     pub multisig: Box<Account<'info, Multisig>>,
 
    /// CHECK: multisig_signer is a PDA program signer. Data is never read or written to
@@ -31,10 +32,8 @@ pub struct ExecuteTransaction<'info> {
     )]
     multisig_signer: UncheckedAccount<'info>,
 
-    #[account(mut, close = proposer)]
+    #[account(mut)]
     pub transaction: Box<Account<'info, Transaction>>,
-
-    pub proposer: Signer<'info>,
 }
 
 #[event]
@@ -50,12 +49,6 @@ pub struct TransactionExecuted {
 pub fn execute_transaction(ctx: Context<ExecuteTransaction>) -> Result<()> {
     let multisig = &ctx.accounts.multisig;
     let transaction = &mut ctx.accounts.transaction;
-    let proposer = &ctx.accounts.proposer;
-
-    // Ensure the proposer is one of the owners of the multisig
-    if !multisig.owner.contains(&proposer.key()) {
-        return Err(ErrorCode::InvalidOwner.into());
-    }
 
     // Check if the transaction is already executed
     if transaction.did_execute {

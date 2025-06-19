@@ -5,8 +5,6 @@ use crate::state::{Multisig};
 pub struct InitMultisig<'info> {
     #[account(zero, signer)]
     pub multisig: Box<Account<'info, Multisig>>,
-
-    pub system_program: Program<'info, System>,
 }
 
 #[event]
