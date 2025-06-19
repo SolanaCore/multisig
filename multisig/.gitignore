@@ -7,7 +7,6 @@ KeyPairs
 client/target
 **/*.rs.bk
 node_modules
-tests
 test-ledger
 .yarn*
 yarn.lock
