@@ -10,13 +10,13 @@ pub struct EditTransaction<'info> {
     #[account(mut)]
     pub multisig: Box<Account<'info, Multisig>>,
 
-    /// CHECK: multisig_signer is a PDA that is used to sign transactions on behalf of the multisig
-    #[account(
-        mut,
-        seeds = [b"multisig", multisig.key().as_ref()],
-        bump = multisig.bump,
-    )]
-    pub multisig_signer: AccountInfo<'info>,
+    // /// CHECK: multisig_signer is a PDA that is used to sign transactions on behalf of the multisig
+    // #[account(
+    //     mut,
+    //     seeds = [b"multisig", multisig.key().as_ref()],
+    //     bump = multisig.bump,
+    // )]
+    // pub multisig_signer: AccountInfo<'info>,
 
     #[account(mut)]
     pub transaction: Box<Account<'info, Transaction>>,

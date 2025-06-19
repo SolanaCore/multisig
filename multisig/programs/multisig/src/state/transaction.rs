@@ -2,7 +2,6 @@ use anchor_lang::prelude::*;
 use anchor_lang::solana_program::instruction::Instruction;
 use crate::error::ErrorCode;
 use crate::state::{Multisig};
-use std::ops::Deref;
 
 #[account]
 #[derive(InitSpace)]
