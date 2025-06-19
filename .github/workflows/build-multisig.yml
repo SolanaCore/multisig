@@ -45,7 +45,9 @@ jobs:
           ls
           cd ./multisig
           anchor build
-
+      - name: Install npm packages
+        run: cd ./multisig && npm install
+        
       - name: Anchor Test
         run: |
           cd ./multisig
