@@ -33,7 +33,7 @@ describe("test for my multisig contract", () => {
   const sig  = await connection.requestAirdrop(multisigSigner, LAMPORTS_PER_SOL);
   await connection.confirmTransaction(sig, "confirmed");
   console.log("✅ Airdropped SOL to multisigSigner:", multisigSigner.toBase58());
-    const sig  = await connection.requestAirdrop(txAccount.publickey, LAMPORTS_PER_SOL);
+    const sig_0  = await connection.requestAirdrop(txAccount.publickey, LAMPORTS_PER_SOL);
   })
 
 
