@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Solana Environment
-        uses: DhruvWebDev/solana-setup-action@v0.0.1 
+        uses: DhruvWebDev/solana-setup-action@v0.0.4
         with:
           node-version: '20'
           solana-cli-version: '1.18.26'
@@ -47,4 +47,4 @@ jobs:
           anchor build
 
       - name: Anchor Test
-        run: Anchor test
+        run: anchor test
