@@ -28,7 +28,7 @@ jobs:
           solana config set --url devnet
           solana-keygen new --no-bip39-passphrase
           solana address 
-          solana airdrop 1
+          solana airdrop 2
           solana balance 
 
       - name: change dir
@@ -45,6 +45,10 @@ jobs:
           ls
           cd ./multisig
           anchor build
-
+      - name: Install npm packages
+        run: cd ./multisig && npm install
+        
       - name: Anchor Test
-        run: anchor test
+        run: |
+          cd ./multisig
+          anchor test

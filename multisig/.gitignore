@@ -7,10 +7,10 @@ KeyPairs
 client/target
 **/*.rs.bk
 node_modules
-tests
 test-ledger
 .yarn*
 yarn.lock
 Makefile
 sdk/node_modules
 sdk/tools
+.env
