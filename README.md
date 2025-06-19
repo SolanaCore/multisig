@@ -1,4 +1,4 @@
-#SolanaCoreMultisig Contract
+### SolanaCoreMultisig Contract
 
 ## Environment Setup
 1. Install `Rust`
