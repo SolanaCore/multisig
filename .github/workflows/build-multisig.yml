@@ -12,6 +12,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: analyse the contract to find any error
+        run: |
+          curl -L https://raw.githubusercontent.com/auditware/radar/main/install-radar.sh | bash
+          ls
+          radar -p ./multisig
+        
       - name: Setup Solana Environment
         uses: DhruvWebDev/solana-setup-action@v0.0.4
         with:
