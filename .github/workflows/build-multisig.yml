@@ -19,6 +19,13 @@ jobs:
           solana-cli-version: '1.18.26'
           anchor-version: '0.31.1'
 
+      - name: Run x-ray analysis
+        run: |
+          docker run --rm \
+            --volume "${{ github.workspace }}/multisig:/project" \
+            ghcr.io/sec3-product/x-ray:latest \
+            /project
+            
       - name: Verify Solana CLI version
         run: solana --version
 
@@ -31,24 +38,25 @@ jobs:
           solana airdrop 2
           solana balance 
 
-      - name: change dir
-        run: |
-         ls
-         cd ./multisig
-         ls
-      
       - name: Verify Anchor CLI version
         run: anchor --version
 
       - name: Anchor Build
-        run: |
-          ls
-          cd ./multisig
-          anchor build
+        run: anchor build
+        working-directory: ./multisig
+
       - name: Install npm packages
-        run: cd ./multisig && npm install
-        
+        run: npm install
+        working-directory: ./multisig
+
       - name: Anchor Test
-        run: |
-          cd ./multisig
-          anchor test
+        run: anchor test
+        working-directory: ./multisig
+
+    
+
+      # Optional: if x-ray supports outputting SARIF
+      # - name: Upload SARIF report
+      #   uses: github/codeql-action/upload-sarif@v3
+      #   with:
+      #     sarif_file: multisig/output.sarif
