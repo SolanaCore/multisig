@@ -11,12 +11,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: analyse the contract to find any error
-        run: |
-          curl -L https://raw.githubusercontent.com/auditware/radar/main/install-radar.sh | bash
-          ls
-          radar -p ./multisig
         
       - name: Setup Solana Environment
         uses: DhruvWebDev/solana-setup-action@v0.0.4
@@ -24,6 +18,12 @@ jobs:
           node-version: '20'
           solana-cli-version: '1.18.26'
           anchor-version: '0.31.1'
+
+      - name: analyse the contract to find any error
+        run: |
+          curl -L https://raw.githubusercontent.com/auditware/radar/main/install-radar.sh | bash
+          ls
+          radar -p ./multisig
 
       - name: Verify Solana CLI version
         run: solana --version
