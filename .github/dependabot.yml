@@ -11,3 +11,18 @@ updates:
     directory: "multisig" 
     schedule:
       interval: "daily"
+updates:
+  - package-ecosystem: "npm"
+    directory: "./blinks" 
+    schedule:
+      interval: "daily"
+updates:
+  - package-ecosystem: "npm"
+    directory: "./client/js" 
+    schedule:
+      interval: "daily"
+updates:
+  - package-ecosystem: "npm"
+    directory: "./client" 
+    schedule:
+      interval: "daily"
