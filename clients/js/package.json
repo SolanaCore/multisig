@@ -1,0 +1,34 @@
+{
+  "name": "@solanacore/multisig",
+  "version": "0.0.3",
+  "description": "typescript sdk",
+  "main": "dist/index.js",
+  "scripts": {
+    "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
+    "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check"
+  },
+  "keywords": [
+    "multisig",
+    "ts",
+    "sdk",
+    "smart contracts",
+    "solana",
+    "signers"
+  ],
+  "author": "@solanacore",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@solana/kit": "^2.1.1",
+    "prettier": "^3.6.1",
+    "tsc": "^2.0.4",
+    "typescript": "^5.8.3"
+  },
+  "homepage": "https://github.com/SolanaCore/pump/blob/main/client#readme",
+  "bugs": {
+    "url": "https://github.com/SolanaCore/pump/issues"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.6"
+  }
+}
