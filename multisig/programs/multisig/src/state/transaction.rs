@@ -127,7 +127,7 @@ impl<'info> Transaction{
         Ok(())
     }
     
-    pub fn close(&self, proposer:Pubkey) -> Result<()> {
+    pub fn close_tx(&self, proposer:Pubkey) -> Result<()> {
         assert!(self.owner == proposer, "{}", ErrorCode::InvalidOwner);
         Ok(())
     }

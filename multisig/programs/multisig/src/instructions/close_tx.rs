@@ -30,7 +30,7 @@ pub fn close_transaction(ctx: Context<CloseTransaction>) -> Result<()> {
     let proposer = &ctx.accounts.proposer;
 
     transaction.validate(multisig)?;
-    transaction.close(proposer.key())?;
+    transaction.close_tx(proposer.key())?;
     // Emit an event for the cancelled transaction
     emit!(TransactionClosed {
         multisig: multisig.key(),

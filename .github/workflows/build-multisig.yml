@@ -30,9 +30,9 @@ jobs:
           solana config set -u l 
           solana-keygen new --no-bip39-passphrase
           solana address 
-          solana airdrop 100
           solana-test-validator --reset --quiet &
           sleep 15
+          solana airdrop 100
           solana balance 
 
       - name: Verify Anchor CLI version
