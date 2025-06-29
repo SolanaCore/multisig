@@ -28,7 +28,7 @@ solana_security_txt::security_txt! {
     preferred_languages: "en"
 }
 
-declare_id!("AwhGP9QqsN2JAaS2XyYo2PeC2EAvkCExYLd5Mfuq1GaQ");
+declare_id!("C9h86YyYMpKViSzRpE7XUPrRVRypu5WTSitJ9n8czcZh");
 
 pub const ANCHOR_DISCRIMINATOR_SIZE: usize = 8;
 
