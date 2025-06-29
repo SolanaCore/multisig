@@ -9,6 +9,15 @@ skip-lint = false
 [programs.devnet]
 multisig = "C9h86YyYMpKViSzRpE7XUPrRVRypu5WTSitJ9n8czcZh"
 
+[programs.localnet]
+multisig = "C9h86YyYMpKViSzRpE7XUPrRVRypu5WTSitJ9n8czcZh"
+
+[programs.testnet]
+multisig = "C9h86YyYMpKViSzRpE7XUPrRVRypu5WTSitJ9n8czcZh"
+
+[programs.mainnet]
+multisig = "C9h86YyYMpKViSzRpE7XUPrRVRypu5WTSitJ9n8czcZh"
+
 [registry]
 url = "https://api.apr.dev"
 
