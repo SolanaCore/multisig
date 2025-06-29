@@ -33,9 +33,11 @@ jobs:
         run: |
           solana config get
           solana config set -u l 
-          solana-keygen new --no-bip39-passphrase
+          solana-keygen grind --starts-with muLtisig:1
           solana address 
           solana airdrop 100
+          solana-test-validator --reset --quiet &
+          sleep 15
           solana balance 
 
       - name: Verify Anchor CLI version
@@ -52,9 +54,7 @@ jobs:
       - name: Anchor Test
         run: anchor test
         working-directory: ./multisig
-
-    
-
+  
       # Optional: if x-ray supports outputting SARIF
       # - name: Upload SARIF report
       #   uses: github/codeql-action/upload-sarif@v3
