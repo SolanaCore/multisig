@@ -8,6 +8,7 @@ describe("test for my multisig contract", () => {
  anchor.setProvider(anchor.AnchorProvider.env());
   const program = anchor.workspace.SolanaCoreMultisig as anchor.Program<SolanaCoreMultisig>;
   const connection  =  new Connection(clusterApiUrl("devnet"));
+  console.log(connection);
   const multisigPDA = Keypair.generate();
   const [multisigSigner, bump] = PublicKey.findProgramAddressSync(
     [Buffer.from("multisig"), multisigPDA.publicKey.toBuffer()],
@@ -30,12 +31,9 @@ describe("test for my multisig contract", () => {
 
 
   it("airdrop", async () => {
-  const sig  = await connection.requestAirdrop(multisigSigner, LAMPORTS_PER_SOL);
-  await connection.confirmTransaction(sig, "confirmed");
-  console.log("✅ Airdropped SOL to multisigSigner:", multisigSigner.toBase58());
-    const sig_0  = await connection.requestAirdrop(txAccount.publickey, LAMPORTS_PER_SOL);
+  // console.log("✅ Airdropped SOL to multisigSigner:", multisigSigner.toBase58());
+    const sig_0  = await connection.requestAirdrop(txAccount.publicKey, LAMPORTS_PER_SOL);
   })
-
 
   it("init multisig", async () => {
     const ownersArr = [ownerA.publicKey, ownerB.publicKey, ownerC.publicKey, ownerD.publicKey];
@@ -52,6 +50,8 @@ describe("test for my multisig contract", () => {
       .signers([multisigPDA])
       .rpc();
 
+        const sig  = await connection.requestAirdrop(multisigSigner, LAMPORTS_PER_SOL);
+      await connection.confirmTransaction(sig, "confirmed");
     console.log("✅ Multisig initialized:", result);
     const multisigPDAAccount = await program.account.multisig.fetch(multisigPDA.publicKey);
     console.log("Multisig Account:", multisigPDAAccount);
@@ -180,9 +180,6 @@ describe("test for my multisig contract", () => {
     console.log("Program ID:", txOnChain.programId.toString());
     console.log("Data:", txOnChain.data.toString("hex"));
     console.log("Accounts:");
-    txOnChain.accounts.forEach((acc, idx) => {
-      console.log(`  [${idx}] ${acc.pubkey.toBase58()} | Signer: ${acc.isSigner} | Writable: ${acc.isWritable}`);
-    });
     console.log("Signers Bitmap:", txOnChain.signers);
 
     const remainingAccounts = [
