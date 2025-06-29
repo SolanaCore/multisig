@@ -33,7 +33,7 @@ jobs:
         run: |
           solana config get
           solana config set -u l 
-          solana-keygen grind --starts-with muLtisig:1
+          solana-keygen grind --starts-with msi:10 --no-outfile --format text
           solana address 
           solana airdrop 100
           solana-test-validator --reset --quiet &
