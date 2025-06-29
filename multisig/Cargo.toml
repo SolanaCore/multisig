@@ -1,8 +1,8 @@
 [workspace]
 members = [
-    "programs/multisig"
+    "programs/multisig",
 ]
-resolver = "2"
+resolver = "1"
 
 [profile.release]
 overflow-checks = true
