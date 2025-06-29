@@ -3,7 +3,7 @@ use crate::state::{Multisig, Transaction};
 // use crate::constants::SEED;
 
     #[derive(Accounts)]
-    pub struct CancelTransaction<'info> {
+    pub struct CloseTransaction<'info> {
         pub multisig: Box<Account<'info, Multisig>>,
 
         #[account(
@@ -18,22 +18,21 @@ use crate::state::{Multisig, Transaction};
     }
 
 #[event]
-pub struct TransactionCancelled {
+pub struct TransactionClosed {
     pub multisig: Pubkey,
     pub transaction: Pubkey,
     pub program_id: Pubkey,
 }
 
-pub fn cancel_transaction(ctx: Context<CancelTransaction>) -> Result<()> {
+pub fn close_transaction(ctx: Context<CloseTransaction>) -> Result<()> {
     let multisig = &ctx.accounts.multisig;
     let transaction = &mut ctx.accounts.transaction;
     let proposer = &ctx.accounts.proposer;
 
-    transaction.check_if_already_executed()?;
     transaction.validate(multisig)?;
-    transaction.cancel(proposer.key())?;
+    transaction.close(proposer.key())?;
     // Emit an event for the cancelled transaction
-    emit!(TransactionCancelled {
+    emit!(TransactionClosed {
         multisig: multisig.key(),
         transaction: transaction.key(),
         program_id: *ctx.program_id,

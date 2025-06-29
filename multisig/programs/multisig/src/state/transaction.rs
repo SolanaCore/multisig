@@ -126,6 +126,11 @@ impl<'info> Transaction{
         assert!(self.owner == proposer,"{}", ErrorCode::InvalidOwner);
         Ok(())
     }
+    
+    pub fn close(&self, proposer:Pubkey) -> Result<()> {
+        assert!(self.owner == proposer, "{}", ErrorCode::InvalidOwner);
+        Ok(())
+    }
 
     pub fn revoke_approval(&mut self, multisig:&Multisig, signer: Pubkey) -> Result<()> {
         let owner_index = multisig

@@ -60,6 +60,10 @@ pub mod solana_core_multisig {
     pub fn cancel_tx(ctx: Context<CancelTransaction>) -> Result<()> {
         instructions::cancel_transaction(ctx)
     }
+    
+    pub fn close_tx(ctx: Context<CloseTransaction>) -> Result<()> {
+        instructions::close_transaction(ctx)
+    }
 
     pub fn revoke_approval(ctx: Context<RevokeApproval>) -> Result<()> {
         instructions::revoke_approval(ctx)

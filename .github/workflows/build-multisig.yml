@@ -32,10 +32,10 @@ jobs:
       - name: solana config
         run: |
           solana config get
-          solana config set --url devnet
+          solana config set -u l 
           solana-keygen new --no-bip39-passphrase
           solana address 
-          solana airdrop 2
+          solana airdrop 100
           solana balance 
 
       - name: Verify Anchor CLI version
