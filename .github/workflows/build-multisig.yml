@@ -47,7 +47,7 @@ jobs:
         working-directory: ./multisig
 
       - name: Anchor Test
-        run: anchor test
+        run: anchor test --skip-local-validator
         working-directory: ./multisig
   
       # Optional: if x-ray supports outputting SARIF
