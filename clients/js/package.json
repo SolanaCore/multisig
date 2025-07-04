@@ -24,9 +24,9 @@
     "tsc": "^2.0.4",
     "typescript": "^5.8.3"
   },
-  "homepage": "https://github.com/SolanaCore/pump/blob/main/client#readme",
+  "homepage": "https://github.com/SolanaCore/multisig/blob/main/client#readme",
   "bugs": {
-    "url": "https://github.com/SolanaCore/pump/issues"
+    "url": "https://github.com/SolanaCore/multisig/issues"
   },
   "devDependencies": {
     "@types/node": "^24.0.6"
