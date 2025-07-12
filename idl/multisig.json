@@ -2,7 +2,7 @@
   "address": "C9h86YyYMpKViSzRpE7XUPrRVRypu5WTSitJ9n8czcZh",
   "metadata": {
     "name": "solana_core_multisig",
-    "version": "0.1.0",
+    "version": "0.0.1",
     "spec": "0.1.0",
     "description": "Created with Anchor"
   },
@@ -51,7 +51,41 @@
       ],
       "accounts": [
         {
-          "name": "multisig"
+          "name": "multisig",
+          "relations": [
+            "transaction"
+          ]
+        },
+        {
+          "name": "transaction",
+          "writable": true
+        },
+        {
+          "name": "proposer",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "close_tx",
+      "discriminator": [
+        148,
+        28,
+        53,
+        216,
+        158,
+        218,
+        49,
+        41
+      ],
+      "accounts": [
+        {
+          "name": "multisig",
+          "relations": [
+            "transaction"
+          ]
         },
         {
           "name": "transaction",
@@ -351,6 +385,19 @@
       ]
     },
     {
+      "name": "TransactionClosed",
+      "discriminator": [
+        124,
+        24,
+        172,
+        130,
+        209,
+        129,
+        62,
+        176
+      ]
+    },
+    {
       "name": "TransactionCreated",
       "discriminator": [
         55,
@@ -585,6 +632,26 @@
     },
     {
       "name": "TransactionCancelled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "multisig",
+            "type": "pubkey"
+          },
+          {
+            "name": "transaction",
+            "type": "pubkey"
+          },
+          {
+            "name": "program_id",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TransactionClosed",
       "type": {
         "kind": "struct",
         "fields": [

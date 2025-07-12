@@ -12,19 +12,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      
       - name: Setup Solana Environment
-        uses: DhruvWebDev/solana-setup-action@v0.0.4
+        uses: DhruvWebDev/solana-setup-action@v0.0.7
         with:
           node-version: '20'
           solana-cli-version: '1.18.26'
           anchor-version: '0.31.1'
-
-      - name: Run x-ray analysis
-        run: |
-          docker run --rm \
-            --volume "${{ github.workspace }}/multisig:/project" \
-            ghcr.io/sec3-product/x-ray:latest \
-            /project
+          x-ray-enabled: true
             
       - name: Verify Solana CLI version
         run: solana --version
@@ -32,10 +27,12 @@ jobs:
       - name: solana config
         run: |
           solana config get
-          solana config set --url devnet
+          solana config set -u l 
           solana-keygen new --no-bip39-passphrase
           solana address 
-          solana airdrop 2
+          solana-test-validator --reset --quiet &
+          sleep 15
+          solana airdrop 100
           solana balance 
 
       - name: Verify Anchor CLI version
@@ -50,11 +47,9 @@ jobs:
         working-directory: ./multisig
 
       - name: Anchor Test
-        run: anchor test
+        run: anchor test --skip-local-validator
         working-directory: ./multisig
-
-    
-
+  
       # Optional: if x-ray supports outputting SARIF
       # - name: Upload SARIF report
       #   uses: github/codeql-action/upload-sarif@v3

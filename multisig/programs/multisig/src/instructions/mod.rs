@@ -21,3 +21,6 @@ pub use auth::*;
 
 pub mod edit_tx;
 pub use edit_tx::*;
+
+pub mod close_tx;
+pub use close_tx::*;
