@@ -71,7 +71,7 @@ impl<'info> Transaction{
     }
     pub fn check_if_already_executed(&self) -> Result<()> {
         let did_execute = self.did_execute;
-        require!(!did_execute, ErrorCode::TransactionAlreadyExecuted);
+        require!(did_execute == true, ErrorCode::TransactionAlreadyExecuted);
         Ok(())
     }
     pub fn format_ix(&self, multisig_signer:&Pubkey) -> Instruction {
@@ -124,6 +124,11 @@ impl<'info> Transaction{
             return Err(ErrorCode::TransactionAlreadyExecuted.into());
         }
         assert!(self.owner == proposer,"{}", ErrorCode::InvalidOwner);
+        Ok(())
+    }
+    
+    pub fn close_tx(&self, proposer:Pubkey) -> Result<()> {
+        assert!(self.owner == proposer, "{}", ErrorCode::InvalidOwner);
         Ok(())
     }
 

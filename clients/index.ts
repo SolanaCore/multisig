@@ -7,9 +7,9 @@ async function generateClients() {
     const node = rootNodeFromAnchorWithoutDefaultVisitor(anchorIdl as AnchorIdl);
 
     const clients = [
-        { type: "JS", dir: "./js/src", renderVisitor: renderJavaScriptVisitor },
-        { type: "Umi", dir: "./umi/src", renderVisitor: renderJavaScriptUmiVisitor },
-        { type: "Rust", dir: "./rust/src", renderVisitor: renderRustVisitor }
+        { type: "JS", dir: "js/src", renderVisitor: renderJavaScriptVisitor },
+        { type: "Umi", dir: "umi/src", renderVisitor: renderJavaScriptUmiVisitor },
+        { type: "Rust", dir: "rust/src", renderVisitor: renderRustVisitor }
     ];
 
     for (const client of clients) {
