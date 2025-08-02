@@ -18,7 +18,7 @@ pub struct ApproveTransaction<'info> {
 }
 
 
-#[event]
+#[event(discriminator = [1])]
 pub struct TransactionApproved {
     pub multisig: Pubkey,
     pub transaction: Pubkey,

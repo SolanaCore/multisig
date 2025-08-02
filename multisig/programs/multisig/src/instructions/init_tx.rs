@@ -23,7 +23,7 @@ pub struct InitTransaction<'info>{
 }
 
 
-#[event]
+#[event(discriminator = [8])]
 pub struct TransactionCreated {
     pub multisig: Pubkey,
     pub program_id: Pubkey,

@@ -36,6 +36,7 @@ pub const ANCHOR_DISCRIMINATOR_SIZE: usize = 8;
 pub mod solana_core_multisig {
     use super::*;
 
+    #[instruction(discriminator = [1])]
     pub fn initialize_multisig(
         ctx: Context<InitMultisig>, owners: Vec<Pubkey>, threshold: u64, bump: u8,
     ) -> Result<()> {
@@ -43,33 +44,42 @@ pub mod solana_core_multisig {
         instructions::init_multisig(ctx, owners, threshold, bump)
     }
 
+    #[instruction(discriminator = [2])]
     pub fn create_tx(
         ctx: Context<InitTransaction>, pid: Pubkey, data: Vec<u8>, accs: Vec<TransactionAccount>
     ) -> Result<()> {
         instructions::init_transaction(ctx, &pid, accs, data)
     }
-
+    
+    #[instruction(discriminator = [3])]
     pub fn execute_tx(ctx: Context<ExecuteTransaction>) -> Result<()> { // Removed &mut as it's typically Context<T>
         instructions::execute_transaction(ctx)
     }
 
+    #[instruction(discriminator = [4])]
     pub fn edit_tx(ctx: Context<EditTransaction>, data: Vec<u8>, accs: Vec<TransactionAccount>) -> Result<()> {
         instructions::edit_transaction(ctx, accs, data)
     }
 
+    #[instruction(discriminator = [5])]
     pub fn cancel_tx(ctx: Context<CancelTransaction>) -> Result<()> {
         instructions::cancel_transaction(ctx)
     }
-    
+
+    #[instruction(discriminator = [6])]
     pub fn close_tx(ctx: Context<CloseTransaction>) -> Result<()> {
         instructions::close_transaction(ctx)
     }
 
+    #[instruction(discriminator = [7])]
     pub fn revoke_approval(ctx: Context<RevokeApproval>) -> Result<()> {
         instructions::revoke_approval(ctx)
     }
 
+    #[instruction(discriminator = [8])]
     pub fn approve(ctx: Context<ApproveTransaction>) -> Result<()> {
         instructions::approve_transaction(ctx)
     }
+
+    //todo - change threshold and ownership
 }
