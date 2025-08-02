@@ -3,7 +3,7 @@ use anchor_lang::solana_program::instruction::Instruction;
 use crate::error::ErrorCode;
 use crate::state::{Multisig};
 
-#[account(descriminator = [2])]
+#[account(discriminator = [2])]
 #[derive(InitSpace)]
 pub struct Transaction {
     pub multisig: Pubkey,

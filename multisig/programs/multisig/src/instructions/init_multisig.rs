@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use crate::state::{Multisig};
+use crate::state::*;
 
 #[derive(Accounts)]
 pub struct InitMultisig<'info> {

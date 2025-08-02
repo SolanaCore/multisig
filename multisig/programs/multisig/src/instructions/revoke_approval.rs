@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use crate::state::{Multisig, Transaction};
+use crate::state::*;
 use crate::error::ErrorCode;
 #[derive(Accounts)]
 pub struct RevokeApproval<'info>{
