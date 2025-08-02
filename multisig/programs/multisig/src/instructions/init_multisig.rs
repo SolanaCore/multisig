@@ -1,6 +1,8 @@
 use anchor_lang::prelude::*;
-use crate::state::*;
-
+use crate::{
+    state::{Multisig, Transaction, TransactionAccount},
+    error::ErrorCode
+};
 #[derive(Accounts)]
 pub struct InitMultisig<'info> {
     #[account(zero, signer)]

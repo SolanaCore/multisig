@@ -82,4 +82,8 @@ pub mod solana_core_multisig {
     }
 
     //todo - change threshold and ownership
+    #[instruction(discriminator = [9])]
+    pub fn change_owner_threshold(ctx: Context<Auth>, new_owners: Vec<Pubkey>, new_threshold: u64) -> Result<()> {
+        instructions::change_owners_and_threshold(ctx, new_owners, new_threshold)
+    }
 }

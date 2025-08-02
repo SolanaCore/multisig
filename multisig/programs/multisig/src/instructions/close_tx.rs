@@ -1,5 +1,8 @@
 use anchor_lang::prelude::*;
-use crate::state::{Multisig, Transaction};
+use crate::{
+    state::{Multisig, Transaction, TransactionAccount},
+    error::ErrorCode
+};
 // use crate::constants::SEED;
 
     #[derive(Accounts)]

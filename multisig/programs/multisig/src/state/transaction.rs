@@ -1,7 +1,9 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::instruction::Instruction;
-use crate::error::ErrorCode;
-use crate::state::{Multisig};
+use crate::{
+    error::ErrorCode,
+    state::{Multisig},
+};
 
 #[account(discriminator = [2])]
 #[derive(InitSpace)]
@@ -52,7 +54,7 @@ impl<'info> Transaction{
     }
 
 
-    pub fn approve(&mut self, signer:Pubkey, multisig:&Multisig) -> Result<()> {
+    pub fn approve(&mut self, signer:Pubkey, multisig: &Multisig) -> Result<()> {
         let owner_index = multisig
             .owner
             .iter()

@@ -1,6 +1,9 @@
 use anchor_lang::prelude::*;
-use crate::state::*;
-use crate::error::ErrorCode;
+use crate::{
+    state::{Multisig, Transaction, TransactionAccount},
+    error::ErrorCode
+};
+
 #[derive(Accounts)]
 pub struct RevokeApproval<'info>{
     #[account(mut)]
@@ -35,7 +38,7 @@ pub fn revoke_approval(ctx: Context<RevokeApproval>) -> Result<()> {
     Ok(())
 }
 
-#[event(discriminator = [9])]
+#[event(discriminator = [10])]
 pub struct TransactionRevoked {
     pub multisig: Pubkey,
     pub transaction: Pubkey,

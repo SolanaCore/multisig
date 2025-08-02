@@ -1,8 +1,11 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::pubkey::Pubkey;
 use anchor_lang::prelude::Signer;
-use crate::state::{Multisig, Transaction, TransactionAccount};
-use crate::error::ErrorCode;
+
+use crate::{
+    state::{Multisig, Transaction, TransactionAccount},
+    error::ErrorCode
+};
 
 #[derive(Accounts)]
 pub struct EditTransaction<'info> {

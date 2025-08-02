@@ -24,3 +24,6 @@ pub use edit_tx::*;
 
 pub mod close_tx;
 pub use close_tx::*;
+
+pub mod owners_threshold;
+pub use owners_threshold::*;
