@@ -24,7 +24,7 @@ pub struct EditTransaction<'info> {
     pub proposer: Signer<'info>,
 }
 
-#[event]
+#[event(discriminator = [5])]
 pub struct TransactionEdited {
     pub multisig: Pubkey,
     pub transaction: Pubkey,

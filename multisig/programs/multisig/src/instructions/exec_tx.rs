@@ -36,7 +36,7 @@ pub struct ExecuteTransaction<'info> {
     pub transaction: Box<Account<'info, Transaction>>,
 }
 
-#[event]
+#[event(discriminator = [6])]
 pub struct TransactionExecuted {
     pub multisig: Pubkey,
     pub transaction: Pubkey,

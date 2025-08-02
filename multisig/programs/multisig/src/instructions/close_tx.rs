@@ -17,7 +17,7 @@ use crate::state::{Multisig, Transaction};
         pub proposer: Signer<'info>,
     }
 
-#[event]
+#[event(discriminator = [4])]
 pub struct TransactionClosed {
     pub multisig: Pubkey,
     pub transaction: Pubkey,

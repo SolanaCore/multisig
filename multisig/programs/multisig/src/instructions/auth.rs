@@ -19,7 +19,7 @@ pub struct Auth<'info> {
     pub multisig_signer: Signer<'info>,
 }
 
-#[event]
+#[event(discriminator = [2])]
 pub struct AuthEvent {
     pub multisig: Pubkey,
     pub program_id: Pubkey,
