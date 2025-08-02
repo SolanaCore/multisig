@@ -35,7 +35,7 @@ pub fn revoke_approval(ctx: Context<RevokeApproval>) -> Result<()> {
     Ok(())
 }
 
-#[event(discriminator = [9])]
+#[event(discriminator = [10])]
 pub struct TransactionRevoked {
     pub multisig: Pubkey,
     pub transaction: Pubkey,

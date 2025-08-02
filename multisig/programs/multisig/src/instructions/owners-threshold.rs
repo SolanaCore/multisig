@@ -1,10 +1,11 @@
 use crate:instructions::auth::Auth;
 
-pub fn change_threshold(ctx: Context<Auth>, new_threshold: u64) -> Result<()> {
+    pub fn change_threshold(ctx: Context<Auth>, new_threshold: u64) -> Result<()> {
         let multisig = &mut ctx.accounts.multisig;
         *multisig.update_threshold(new_threshold)?;
         Ok(())
     }
+    
     pub fn change_owners(ctx: Context<Auth>, new_owners: Vec<Pubkey>) -> Result<()> {
         let multisig = &mut ctx.accounts.multisig;
         *multisig.owner(new_owners.clone())?;
@@ -20,5 +21,20 @@ pub fn change_threshold(ctx: Context<Auth>, new_threshold: u64) -> Result<()> {
         assert!(new_threshold > 0 && new_threshold > new_owners.len() as u64,"{}", ErrorCode::InvalidThreshold);
         change_threshold(ctx, new_threshold)?;
         change_owners(ctx, new_owners)?;
+
+        emit!(TransaChangedOwnerAndThresholdctionRevoked {
+        multisig: multisig.key(),
+        new_owners: new_owners,
+        new_threshold: new_threshold,
+       });
+
         Ok(())
+    }
+
+    //event
+    #[event(discriminator = [9])]
+    pub struct ChangedOwnerAndThreshold{
+        multisig: Pubkey,
+        new_owners: Vec<Pubkey>,
+        new_threshold: u64
     }
