@@ -1,6 +1,10 @@
 use anchor_lang::prelude::*;
-use crate::state::{Multisig, Transaction};
-use crate::error::ErrorCode;
+
+use crate::{
+    state::{Multisig, Transaction, TransactionAccount},
+    error::ErrorCode
+};
+
 #[derive(Accounts)]
 pub struct RevokeApproval<'info>{
     #[account(mut)]

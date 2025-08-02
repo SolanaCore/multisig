@@ -1,8 +1,7 @@
 use anchor_lang::prelude::*;
 use crate::utils::assert_unique_owner::*;
 use crate::error::ErrorCode;
-
-#[account(descriminator = [1])]
+#[account(discriminator = [1])]
 #[derive(InitSpace, Eq,PartialEq, Debug)]
 pub struct Multisig {
     #[max_len(50)]
