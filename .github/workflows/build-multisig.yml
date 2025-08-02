@@ -11,14 +11,18 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      
+      - name: Install Linux deps
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libudev-dev pkg-config
+        
       - name: Setup Solana Environment
-        uses: DhruvWebDev/solana-setup-action@v0.0.7
+        uses: DhruvWebDev/solana-setup-action@v0.1.0
         with:
           node-version: '20'
           solana-cli-version: '1.18.26'
-          anchor-version: '0.31.1'
+          anchor-version: 'v0.31.1'
           x-ray-enabled: true
             
       - name: Verify Solana CLI version
