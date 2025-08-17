@@ -22,7 +22,8 @@ jobs:
           solana-airdrop-amount: '100'
           solana-wallet-setup: true
           build-script: 'anchor build'
-          test-script: 'anchor test'
+          # Add --skip-local-validator else the build would fail and another tip is to add --skip-build flag to fasten up the workflow because we have already built it in the anchor build
+          test-script: 'anchor test  --skip-local-validator --skip-build'
           deploy-script: 'anchor deploy --skip-local-validator --skip-build'
           x-ray-enabled: true
           working-directory: './multisig'
