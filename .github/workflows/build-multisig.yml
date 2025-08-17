@@ -1,44 +1,27 @@
 name: Multisig CI
-
 on:
   pull_request:
     branches: [ "main" ]
   push:
     branches: [ "main" ]
 
-
 jobs:
   build-and-test-program:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Install Linux deps
-        shell: bash
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libudev-dev pkg-config
-        
+      
       - name: Setup Solana Environment
-        uses: DhruvWebDev/solana-setup-action@v0.1.1
+        uses: DhruvWebDev/solana-setup-action@v0.1.2
         with:
           node-version: '20'
           solana-cli-version: '1.18.26'
           anchor-version: 'v0.31.1'
-          x-ray-enabled: true
+          solana-network: 'localnet'
+          solana-airdrop-amount: '100'
+          solana-wallet-setup: true
           build-script: 'anchor build'
-            
-      - name: Verify Solana CLI version
-        run: solana --version
-
-      - name: solana config
-        run: |
-          solana config get
-          solana config set -u l 
-          solana-keygen new --no-bip39-passphrase
-          solana address 
-          solana-test-validator --reset --quiet &
-          sleep 15
-          solana airdrop 100
-          solana balance 
+          test-script: 'anchor test'
+          deploy-scrip: 'anchor deploy'
+          x-ray-enabled: true
