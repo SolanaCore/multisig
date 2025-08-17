@@ -25,3 +25,4 @@ jobs:
           test-script: 'anchor test'
           deploy-scrip: 'anchor deploy'
           x-ray-enabled: true
+          working-directory: './multisig'
