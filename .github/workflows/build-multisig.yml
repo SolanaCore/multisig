@@ -23,6 +23,6 @@ jobs:
           solana-wallet-setup: true
           build-script: 'anchor build'
           test-script: 'anchor test'
-          deploy-script: 'anchor deploy'
+          deploy-script: 'anchor deploy --skip-validator --skip-build'
           x-ray-enabled: true
           working-directory: './multisig'
